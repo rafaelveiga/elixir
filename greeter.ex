@@ -1,6 +1,6 @@
 defmodule Greeter do
   def greet() do
-    user_input = String.trim(IO.gets("What is your name?\n"))
+    user_input = IO.gets("What is your name?\n") |> String.trim()
 
     case user_input do
       "Rafael"  -> "Nice Name!"
