@@ -1,14 +1,6 @@
 defmodule MinimalTodo do
   def start do
-    # ask user for filename
-    filename = IO.gets("Name of the file to load: ") |> String.trim()
-
-    read(filename)
-    |> parse
-    |> get_command
-
-    # ask user for command
-    # read todos, add todos, delete todos, load file, save file
+    load_csv()
   end
 
   def get_command(data) do
@@ -22,9 +14,28 @@ defmodule MinimalTodo do
     case command do
       "r" -> show_todos(data)
       "d" -> delete_todo(data)
+      "l" -> load_csv()
+      "a" -> add_todo(data)
       "q" -> "Quit"
       _ -> get_command(data)
     end
+  end
+
+  def add_todo(data) do
+    fields = data[hd(Map.keys(data))] |> Map.keys()
+
+    formatted_fields =
+      Enum.map(fields, fn field ->
+        value = IO.gets("#{field}: ") |> String.trim()
+        {field, value}
+      end)
+      |> Enum.into(%{})
+
+    new_todo = %{formatted_fields["Item"] => formatted_fields}
+
+    new_data = Map.merge(data, new_todo)
+
+    get_command(new_data)
   end
 
   def delete_todo(data) do
@@ -39,6 +50,15 @@ defmodule MinimalTodo do
       show_todos(data, false)
       delete_todo(data)
     end
+  end
+
+  def load_csv() do
+    # ask user for filename
+    filename = IO.gets("Name of the file to load: ") |> String.trim()
+
+    read(filename)
+    |> parse
+    |> get_command
   end
 
   def read(filename) do
@@ -70,7 +90,11 @@ defmodule MinimalTodo do
   def show_todos(data, next? \\ true) do
     items = Map.keys(data)
     IO.puts("You have the following todos: \n")
-    Enum.each(items, fn item -> IO.puts(item) end)
+
+    Enum.each(items, fn item ->
+      IO.puts(~s(#{item} - #{data[item]["Description"]}, Priority: #{data[item]["Priority"]}))
+    end)
+
     IO.puts("\n")
 
     if next? do
