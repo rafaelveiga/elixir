@@ -49,12 +49,25 @@ defmodule Cards do
     get_command(new_deck)
   end
 
+  def draw_a_card(deck) do
+    {card, new_deck} = deal_cards(deck, 1)
+    {computer_card, _} = deal_cards(new_deck, 1)
+
+    IO.puts(~s(Your card: "#{card}, Computer Card: "#{computer_card}"))
+
+    get_command(deck)
+  end
+
   def get_command(deck) do
-    command = IO.gets("Command - (D)raw Hand: ") |> String.trim() |> String.downcase()
+    command =
+      IO.gets("Command - (D)raw Hand, (T)ake one card: ") |> String.trim() |> String.downcase()
 
     case command do
       "d" ->
         draw_hand(deck)
+
+      "t" ->
+        draw_a_card(deck)
 
       _ ->
         get_command(deck)
