@@ -2,7 +2,7 @@ defmodule Cards do
   def start() do
     create_deck()
     |> shuffle()
-    |> deal_cards(3)
+    |> get_command
   end
 
   def create_deck() do
@@ -29,11 +29,31 @@ defmodule Cards do
     end
   end
 
+  @spec shuffle(list) :: list
   def shuffle(deck) do
     Enum.shuffle(deck)
   end
 
+  @spec deal_cards(list, integer) :: {list, list}
   def deal_cards(deck, qty) do
     Enum.split(deck, qty)
+  end
+
+  def get_command(deck) do
+    command = IO.gets("Command - (D)raw Hand: ") |> String.trim() |> String.downcase()
+
+    case command do
+      "d" ->
+        {qty, _} = IO.gets("How many cards?: ") |> String.trim() |> Integer.parse()
+        IO.inspect(qty)
+        {hand, new_deck} = deal_cards(deck, qty)
+
+        IO.inspect(hand)
+
+        get_command(new_deck)
+
+      _ ->
+        get_command(deck)
+    end
   end
 end
