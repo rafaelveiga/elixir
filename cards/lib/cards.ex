@@ -39,18 +39,22 @@ defmodule Cards do
     Enum.split(deck, qty)
   end
 
+  def draw_hand(deck) do
+    {qty, _} = IO.gets("How many cards?: ") |> String.trim() |> Integer.parse()
+    IO.inspect(qty)
+    {hand, new_deck} = deal_cards(deck, qty)
+
+    IO.inspect(hand)
+
+    get_command(new_deck)
+  end
+
   def get_command(deck) do
     command = IO.gets("Command - (D)raw Hand: ") |> String.trim() |> String.downcase()
 
     case command do
       "d" ->
-        {qty, _} = IO.gets("How many cards?: ") |> String.trim() |> Integer.parse()
-        IO.inspect(qty)
-        {hand, new_deck} = deal_cards(deck, qty)
-
-        IO.inspect(hand)
-
-        get_command(new_deck)
+        draw_hand(deck)
 
       _ ->
         get_command(deck)
